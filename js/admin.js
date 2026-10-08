@@ -245,8 +245,8 @@
       row.innerHTML = '<input type="color" aria-label="'+r.label+'"><input aria-label="Hex"><span class="hint">'+r.label+'</span>';
       var ins = row.querySelectorAll('input');
       ins[0].value = data.theme.colors[r.k]; ins[1].value = data.theme.colors[r.k];
-      ins[0].oninput = function() { data.theme.colors[r.k] = ins[0].value; renderThemes(); commit(); };
-      ins[1].onchange = function() { data.theme.colors[r.k] = ins[1].value; renderThemes(); commit(); };
+      ins[0].oninput = function() { data.theme.colors[r.k] = ins[0].value; ins[1].value = ins[0].value; checkContrast(); commit(); };
+      ins[1].onchange = function() { data.theme.colors[r.k] = ins[1].value; ins[0].value = ins[1].value; checkContrast(); commit(); };
       cBox.appendChild(row);
     });
     checkContrast();
