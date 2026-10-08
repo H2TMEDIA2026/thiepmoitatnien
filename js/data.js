@@ -38,5 +38,42 @@ window.INVITE_DEFAULT = {
   "rsvpLink": "",
   "coverImage": "",
   "introImage": "",
-  "gallery": []
+  "gallery": [],
+  "theme": {
+    "colors": {
+      "pearl": "#FBF8F3",
+      "linen": "#F1E9DF",
+      "sand": "#E6D8C6",
+      "taupe": "#7A685A",
+      "cocoa": "#33271F",
+      "gold": "#B38F5E",
+      "goldInk": "#7F5F35",
+      "goldSoft": "#DCC49A"
+    },
+    "heroBg": { "type": "color", "dir": "to bottom", "colors": ["#FBF8F3"] },
+    "sections": {
+      "loi-moi": "pearl",
+      "thoi-gian": "cocoa",
+      "dia-diem": "pearl",
+      "dress-code": "linen",
+      "hinh-anh": "pearl",
+      "cam-on": "sand"
+    },
+    "savedThemes": []
+  },
+  "video": {
+    "enabled": false,
+    "sourceType": "youtube",
+    "url": "",
+    "poster": "",
+    "title": "",
+    "caption": "",
+    "position": "slot-0",
+    "frameStyle": "arch",
+    "aspectRatio": "16:9",
+    "autoplay": false,
+    "loop": false,
+    "controls": true
+  },
+  "sectionOrder": ["loi-moi", "thoi-gian", "dia-diem", "dress-code", "hinh-anh", "cam-on"]
 };

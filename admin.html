@@ -41,6 +41,92 @@
     <form class="panel" id="form" onsubmit="return false" autocomplete="off">
 
       <section class="card">
+        <h2>Màu sắc &amp; Giao diện</h2>
+        <label>Bộ màu có sẵn</label>
+        <div id="theme-presets" class="row row--btn" style="margin-bottom: 8px;"></div>
+        
+        <p class="hint">Các vai trò màu (Tự động tính độ tương phản)</p>
+        <div id="theme-colors" class="list"></div>
+        <div id="contrast-warning" class="err" hidden style="margin-top:4px;"></div>
+        
+        <label style="margin-top:12px">Nền phần Đầu trang (Hero)</label>
+        <div class="row">
+          <select id="hero-bg-type">
+            <option value="color">Màu đơn</option>
+            <option value="gradient2">Chuyển sắc 2 màu</option>
+            <option value="gradient3">Chuyển sắc 3 màu</option>
+          </select>
+          <select id="hero-bg-dir" hidden>
+            <option value="to bottom">Dọc (từ trên xuống)</option>
+            <option value="to bottom right">Chéo (xuống góc phải)</option>
+            <option value="circle at center">Tỏa tròn (từ giữa)</option>
+          </select>
+        </div>
+        <div id="hero-bg-colors" class="row row--btn" style="margin-top:8px"></div>
+        
+        <p class="hint" style="margin-top:12px">Nền từng khối nội dung</p>
+        <div id="section-bgs" class="list"></div>
+        
+        <div class="row row--btn" style="margin-top:16px">
+          <button class="btn btn--small btn--ghost" type="button" id="btn-reset-theme">Hoàn tác về mặc định</button>
+          <button class="btn btn--small" type="button" id="btn-save-theme">Lưu bộ màu này</button>
+        </div>
+        <div id="saved-themes" class="row row--btn" style="margin-top:8px"></div>
+      </section>
+
+      <section class="card">
+        <h2>Clip giới thiệu</h2>
+        <label class="check"><input type="checkbox" id="video-enabled"> Hiện clip trên thư mời</label>
+        <div id="video-settings" hidden>
+          <label>Nguồn clip<select id="video-source-type">
+            <option value="youtube">Link YouTube / Vimeo</option>
+            <option value="file">Đường dẫn file (.mp4, .webm)</option>
+            <option value="drive">Link Google Drive</option>
+          </select></label>
+          <label>Đường dẫn clip<input id="video-url" placeholder="https://... hoặc media/clip.mp4"></label>
+          <p class="hint">Video nặng nên đưa lên YouTube/Vimeo (Không công khai). File nhỏ (<25MB) có thể lưu vào thư mục media/ rồi dán đường dẫn media/ten-file.mp4.</p>
+          
+          <div id="img-poster" class="imgfield"></div>
+          
+          <div class="row">
+            <label>Tiêu đề ngắn<input id="video-title" placeholder="Không bắt buộc"></label>
+            <label>Chú thích<input id="video-caption" placeholder="Không bắt buộc"></label>
+          </div>
+          
+          <div class="row row--btn">
+            <label class="check"><input type="checkbox" id="video-autoplay"> Tự phát (Tắt tiếng)</label>
+            <label class="check"><input type="checkbox" id="video-loop"> Lặp lại</label>
+            <label class="check"><input type="checkbox" id="video-controls"> Hiện nút điều khiển</label>
+          </div>
+          
+          <label style="margin-top: 12px">Vị trí hiển thị</label>
+          <div class="row row--btn">
+            <button class="btn btn--small" type="button" data-vpos="slot-0">Ngay sau tên khách</button>
+            <button class="btn btn--small" type="button" data-vpos="slot-1">Sau lời mời</button>
+            <button class="btn btn--small" type="button" data-vpos="slot-2">Sau ngày giờ</button>
+            <button class="btn btn--small" type="button" data-vpos="slot-3">Sau địa điểm</button>
+            <button class="btn btn--small" type="button" data-vpos="slot-5">Cuối thư mời</button>
+            <button class="btn btn--small" type="button" data-vpos="hero">Nền đầu trang</button>
+            <button class="btn btn--small" type="button" data-vpos="floating">Nút nổi</button>
+          </div>
+          <div class="minimap" id="video-minimap"></div>
+          
+          <div class="row" id="video-frame-opts">
+            <label>Kiểu khung<select id="video-frame">
+              <option value="arch">Khung vòm</option>
+              <option value="round">Chữ nhật bo góc nhẹ</option>
+              <option value="full">Toàn chiều rộng</option>
+            </select></label>
+            <label>Tỉ lệ<select id="video-ratio">
+              <option value="16:9">16:9 (Ngang)</option>
+              <option value="9:16">9:16 (Dọc)</option>
+              <option value="1:1">1:1 (Vuông)</option>
+            </select></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>Thông tin chung</h2>
         <label>Tên đơn vị<input data-k="brand"></label>
         <label>Tên sự kiện<input data-k="eventName"></label>

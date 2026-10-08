@@ -228,6 +228,33 @@ body::before {
 .foot { padding: 34px 24px 44px; text-align: center; background: var(--cocoa); color: var(--sand); font-size: .78rem; letter-spacing: .24em; }
 .foot p { margin: 0; }
 
+/* ---------- VIDEO ---------- */
+.v-slot { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 40px 0; }
+.v-wrap { position: relative; width: 100%; max-width: 800px; overflow: hidden; background: #000; display: grid; }
+.v-wrap iframe, .v-wrap video { width: 100%; height: 100%; border: 0; position: absolute; inset: 0; }
+.v-ratio-16-9 { aspect-ratio: 16 / 9; }
+.v-ratio-9-16 { aspect-ratio: 9 / 16; max-width: 400px; margin-inline: auto; }
+.v-ratio-1-1 { aspect-ratio: 1 / 1; max-width: 600px; margin-inline: auto; }
+.v-arch { border-radius: 999px 999px 0 0; padding-bottom: 20px; }
+.v-round { border-radius: 12px; }
+.v-full { max-width: 100%; }
+
+.v-hero { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.v-hero iframe, .v-hero video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; opacity: 0.6; }
+
+.v-floating { position: fixed; bottom: 24px; right: 24px; z-index: 90; width: 64px; height: 64px; border-radius: 50%; background: var(--gold); border: 2px solid var(--pearl); box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--pearl); animation: pulse 2s infinite; }
+.v-floating svg { width: 24px; height: 24px; fill: currentColor; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(179,143,94,0.6); } 70% { box-shadow: 0 0 0 15px rgba(179,143,94,0); } 100% { box-shadow: 0 0 0 0 rgba(179,143,94,0); } }
+
+.v-text { text-align: center; margin-top: 16px; }
+.v-title { font-family: var(--serif); font-size: 1.4rem; color: var(--cocoa); margin: 0; }
+.v-cap { font-size: 0.9rem; color: var(--taupe); margin: 4px 0 0; }
+
+#video-dialog { padding: 0; background: transparent; border: 0; max-width: 100vw; max-height: 100vh; overflow: visible; width: 100%; }
+#video-dialog::backdrop { background: rgba(0,0,0,0.9); }
+#video-dialog .v-wrap { max-width: 1200px; margin: auto; border-radius: 8px; }
+#video-dialog button { position: absolute; top: -40px; right: 0; background: none; border: 0; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; z-index: 10; }
+
 /* ---------- ƯU TIÊN GIẢM CHUYỂN ĐỘNG / CHẾ ĐỘ XEM TRƯỚC ---------- */
 body.instant *, body.instant *::before, body.instant *::after { animation: none !important; transition: none !important; }
 body.instant .ch, body.instant .fade { opacity: 1; transform: none; filter: none; }

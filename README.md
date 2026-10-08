@@ -29,18 +29,23 @@ images/           để ảnh của bạn (dùng đường dẫn images/ten-anh.
 PROMPT.md         prompt dán vào Antigravity để hoàn thiện sản phẩm
 ```
 
-## Lưu ý quan trọng về việc lưu chỉnh sửa
+## Hướng dẫn chỉnh màu (Theme)
+Bạn có thể thay đổi màu sắc toàn bộ thư mời trong trang **admin**:
+1. Chọn một trong các **Bộ màu có sẵn** để xem kết quả nhanh.
+2. Bạn cũng có thể tùy biến từng vai trò màu (nền chính, chữ chính, màu nhấn...). Hệ thống sẽ tự động kiểm tra xem chữ có bị quá nhạt khó đọc không (độ tương phản) và gợi ý nút "Tự chỉnh giúp tôi" nếu cần.
+3. Nếu ưng ý một phối màu, hãy bấm **Lưu bộ màu này** để dùng lại sau.
+
+## Hướng dẫn sử dụng Clip giới thiệu
+1. Bật **Hiện clip trên thư mời** ở trang admin.
+2. Dán link video (YouTube, Vimeo, Google Drive) hoặc nhập đường dẫn file video (`media/clip.mp4`). **Ghi chú:** Với file MP4, nếu video nặng, hãy up lên YouTube ở chế độ không công khai. Nếu file nhỏ (< 25MB), bạn hãy bỏ video vào thư mục `media/` và dán đường dẫn `media/tên-file.mp4`.
+3. Dùng **bộ chọn vị trí (sơ đồ thư mời)** để chèn video vào vị trí thích hợp: giữa các nội dung, đặt làm nền mờ cho phần Đầu trang, hoặc nút nổi ở góc màn hình. Chọn các thiết lập tỉ lệ và kiểu khung cho đồng bộ với giao diện.
+
+## Lưu ý quan trọng về việc xuất bản bản chỉnh sửa
 Trang admin lưu vào trình duyệt của người đang chỉnh (localStorage), nên khách mở link trên máy khác
 sẽ **chưa thấy** thay đổi. Để mọi khách thấy bản mới:
-1. Chỉnh xong trong admin, bấm **Tải data.js**.
-2. Thay file `js/data.js` bằng file vừa tải, rồi đưa lại lên hosting.
-3. Ảnh muốn chia sẻ cho mọi khách nên chép vào thư mục `images/` và nhập bằng đường dẫn
-   (ảnh tải trực tiếp trong admin chỉ nằm trong trình duyệt của bạn).
-
-Mật khẩu admin chỉ là khóa nhẹ phía trình duyệt, không phải bảo mật thật. Nếu cần bảo mật,
-hãy đặt trang admin sau một dịch vụ đăng nhập của hosting.
-
-## Về ngày tổ chức
+1. Chỉnh màu, vị trí video và nội dung xong trong admin, bấm **Tải data.js**.
+2. Thay file `js/data.js` bằng file vừa tải, rồi đưa lại lên hosting / Cloudflare Workers.
+3. Ảnh muốn chia sẻ cho mọi khách nên chép vào thư mục `images/`, video nhỏ để vào `media/` và nhập bằng đường dẫn. Mật khẩu admin chỉ là khóa nhẹ phía trình duyệt.
 Demo đặt ngày **16/01/2027** (tiệc tất niên cho năm 2026). Nếu tiệc diễn ra năm khác, đổi trong admin → Thời gian và lịch trình.
 
 ## Đưa lên Hosting Miễn phí

@@ -201,9 +201,183 @@
     bindSimple(); renderSchedule(); renderColors(); renderGallery();
     imgField('#img-cover', 'coverImage', 'Ảnh nền đầu trang', 'Hiện mờ phía sau tên khách. Nên dùng ảnh ngang, tông sáng.');
     imgField('#img-intro', 'introImage', 'Ảnh khung vòm', 'Hiện phía trên lời mời. Nên dùng ảnh dọc.');
+    
+    // THEMES
+    renderThemes();
+    
+    // VIDEO
+    bindVideo();
   }
 
-  function init() {
+  /* ---------- THEMES & COLORS ---------- */
+  var PRESETS = [
+    { name: 'Nude (Mặc định)', c: { pearl: '#FBF8F3', linen: '#F1E9DF', sand: '#E6D8C6', taupe: '#7A685A', cocoa: '#33271F', gold: '#B38F5E', goldInk: '#7F5F35', goldSoft: '#DCC49A' } },
+    { name: 'Trắng', c: { pearl: '#FFFFFF', linen: '#F7F7F7', sand: '#EAEAEA', taupe: '#7A7A7A', cocoa: '#222222', gold: '#D4AF37', goldInk: '#9E7E20', goldSoft: '#E5C875' } },
+    { name: 'Champagne ấm', c: { pearl: '#FDFBF7', linen: '#F4EFE6', sand: '#E8DEC8', taupe: '#8B7F68', cocoa: '#4A402D', gold: '#C5A880', goldInk: '#917551', goldSoft: '#E2CAA6' } },
+    { name: 'Hồng nude', c: { pearl: '#FBF6F6', linen: '#F3E8E9', sand: '#E2C8C9', taupe: '#85696B', cocoa: '#422A2D', gold: '#C89B9E', goldInk: '#9A666A', goldSoft: '#E5C1C3' } },
+    { name: 'Xanh sage nhạt', c: { pearl: '#F6F8F6', linen: '#E8EFE8', sand: '#CFDDCF', taupe: '#6B7A6B', cocoa: '#2C3A2C', gold: '#8BA48B', goldInk: '#597259', goldSoft: '#B6CBB6' } },
+    { name: 'Mocha đậm', c: { pearl: '#3A2F2B', linen: '#4A3C37', sand: '#291F1C', taupe: '#A69790', cocoa: '#FFF3EC', gold: '#C29B85', goldInk: '#E2BEA9', goldSoft: '#9C6F55' } }
+  ];
+  var ROLES = [
+    { k: 'pearl', label: 'Nền chính' }, { k: 'linen', label: 'Nền phụ' }, { k: 'sand', label: 'Nền khối đậm' }, { k: 'cocoa', label: 'Nền tối' },
+    { k: 'taupe', label: 'Chữ phụ' }, { k: 'gold', label: 'Màu nhấn' }, { k: 'goldInk', label: 'Màu nhấn đậm' }, { k: 'goldSoft', label: 'Màu nhấn (trên nền tối)' }
+  ];
+  var SECTIONS = [
+    { k: 'loi-moi', label: 'Lời mời' }, { k: 'thoi-gian', label: 'Thời gian' }, { k: 'dia-diem', label: 'Địa điểm' }, { k: 'dress-code', label: 'Dress code' }, { k: 'hinh-anh', label: 'Hình ảnh' }, { k: 'cam-on', label: 'Cảm ơn' }
+  ];
+  
+  function renderThemes() {
+    if(!data.theme) data.theme = InviteStore.defaults().theme;
+    
+    // Presets
+    var tBox = $('#theme-presets'); tBox.innerHTML = '';
+    PRESETS.forEach(function(p) {
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'swatch'; btn.style.backgroundColor = p.c.pearl; btn.title = p.name;
+      btn.onclick = function() { data.theme.colors = Object.assign({}, p.c); renderThemes(); commit(); };
+      tBox.appendChild(btn);
+    });
+    
+    // Colors
+    var cBox = $('#theme-colors'); cBox.innerHTML = '';
+    ROLES.forEach(function(r) {
+      var row = document.createElement('div'); row.className = 'item item--color';
+      row.innerHTML = '<input type="color" aria-label="'+r.label+'"><input aria-label="Hex"><span class="hint">'+r.label+'</span>';
+      var ins = row.querySelectorAll('input');
+      ins[0].value = data.theme.colors[r.k]; ins[1].value = data.theme.colors[r.k];
+      ins[0].oninput = function() { data.theme.colors[r.k] = ins[0].value; renderThemes(); commit(); };
+      ins[1].onchange = function() { data.theme.colors[r.k] = ins[1].value; renderThemes(); commit(); };
+      cBox.appendChild(row);
+    });
+    checkContrast();
+    
+    // Hero Bg
+    $('#hero-bg-type').value = data.theme.heroBg.type;
+    $('#hero-bg-dir').hidden = data.theme.heroBg.type === 'color';
+    $('#hero-bg-dir').value = data.theme.heroBg.dir || 'to bottom';
+    $('#hero-bg-type').onchange = function() { data.theme.heroBg.type = this.value; renderThemes(); commit(); };
+    $('#hero-bg-dir').onchange = function() { data.theme.heroBg.dir = this.value; renderThemes(); commit(); };
+    
+    var hBox = $('#hero-bg-colors'); hBox.innerHTML = '';
+    var numColors = data.theme.heroBg.type === 'color' ? 1 : (data.theme.heroBg.type === 'gradient2' ? 2 : 3);
+    for(let i=0; i<numColors; i++) {
+      let inp = document.createElement('input'); inp.type = 'color';
+      inp.value = data.theme.heroBg.colors[i] || '#FBF8F3';
+      inp.oninput = function() { data.theme.heroBg.colors[i] = this.value; commit(); };
+      hBox.appendChild(inp);
+    }
+    
+    // Section Bgs
+    var sBox = $('#section-bgs'); sBox.innerHTML = '';
+    SECTIONS.forEach(function(s) {
+      var row = document.createElement('div'); row.className = 'item';
+      row.innerHTML = '<span class="hint">'+s.label+'</span><select><option value="pearl">Nền chính</option><option value="linen">Nền phụ</option><option value="sand">Nền khối đậm</option><option value="cocoa">Nền tối</option></select><div></div>';
+      var sel = row.querySelector('select');
+      sel.value = data.theme.sections[s.k] || 'pearl';
+      sel.onchange = function() { data.theme.sections[s.k] = this.value; commit(); };
+      sBox.appendChild(row);
+    });
+  }
+  
+  function getLum(hex) {
+    var rgb = parseInt(hex.substring(1), 16);
+    var a = [(rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255].map(function(v) {
+      v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+  }
+  function getContrast(h1, h2) {
+    var l1 = getLum(h1), l2 = getLum(h2);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  function checkContrast() {
+    var c = data.theme.colors;
+    var w = $('#contrast-warning');
+    if (getContrast(c.cocoa, c.pearl) < 4.5 || getContrast(c.cocoa, c.linen) < 4.5) {
+      w.innerHTML = '⚠️ Chữ chính trên nền sáng đang bị nhạt (< 4.5). <button class="btn btn--small btn--ghost" type="button" id="btn-fix-c1">Tự chỉnh giúp tôi</button>';
+      w.hidden = false;
+      $('#btn-fix-c1').onclick = function() { data.theme.colors.cocoa = getLum(c.pearl) > 0.5 ? '#111111' : '#EEEEEE'; renderThemes(); commit(); };
+    } else if (getContrast(c.pearl, c.cocoa) < 4.5) {
+      w.innerHTML = '⚠️ Chữ trên nền tối đang khó đọc. <button class="btn btn--small btn--ghost" type="button" id="btn-fix-c2">Tự chỉnh giúp tôi</button>';
+      w.hidden = false;
+      $('#btn-fix-c2').onclick = function() { data.theme.colors.cocoa = getLum(c.pearl) > 0.5 ? '#222222' : '#F8F8F8'; renderThemes(); commit(); };
+    } else {
+      w.hidden = true;
+    }
+  }
+
+  $('#btn-reset-theme').onclick = function() {
+    data.theme = InviteStore.defaults().theme; renderThemes(); commit();
+  };
+  $('#btn-save-theme').onclick = function() {
+    data.theme.savedThemes = data.theme.savedThemes || [];
+    data.theme.savedThemes.push(Object.assign({}, data.theme.colors));
+    commit(); setStatus('Đã lưu bộ màu');
+  };
+
+  /* ---------- VIDEO ---------- */
+  function bindVideo() {
+    if(!data.video) data.video = InviteStore.defaults().video;
+    var v = data.video;
+    
+    $('#video-enabled').checked = v.enabled;
+    $('#video-settings').hidden = !v.enabled;
+    $('#video-enabled').onchange = function() { data.video.enabled = this.checked; $('#video-settings').hidden = !this.checked; commit(); };
+    
+    $('#video-source-type').value = v.sourceType || 'youtube';
+    $('#video-url').value = v.url || '';
+    $('#video-title').value = v.title || '';
+    $('#video-caption').value = v.caption || '';
+    $('#video-autoplay').checked = !!v.autoplay;
+    $('#video-loop').checked = !!v.loop;
+    $('#video-controls').checked = !!v.controls;
+    $('#video-frame').value = v.frameStyle || 'arch';
+    $('#video-ratio').value = v.aspectRatio || '16:9';
+    imgField('#img-poster', 'videoPoster', 'Ảnh bìa video', '');
+    data.videoPoster = v.poster; // binding for imgField
+    
+    var bindEvts = ['sourceType', 'url', 'title', 'caption', 'frameStyle', 'aspectRatio'];
+    bindEvts.forEach(function(k) {
+      var el = $('#video-' + k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()));
+      if (el) el.onchange = function() { data.video[k] = this.value; commit(); };
+    });
+    ['autoplay', 'loop', 'controls'].forEach(function(k) {
+      $('#video-' + k).onchange = function() { data.video[k] = this.checked; commit(); };
+    });
+    
+    var btns = document.querySelectorAll('[data-vpos]');
+    btns.forEach(function(btn) {
+      if (btn.dataset.vpos === v.position) btn.classList.add('btn--solid'); else btn.classList.remove('btn--solid');
+      btn.onclick = function() {
+        data.video.position = this.dataset.vpos;
+        bindVideo(); commit();
+        // scroll iframe
+        setTimeout(function() {
+           if(iframe.contentWindow) iframe.contentWindow.postMessage({ type: 'h2t-scroll', pos: data.video.position }, '*');
+        }, 100);
+      };
+    });
+    
+    // Minimap
+    var mm = $('#video-minimap'); mm.innerHTML = '';
+    var order = data.sectionOrder || ["loi-moi", "thoi-gian", "dia-diem", "dress-code", "hinh-anh", "cam-on"];
+    var slotIdx = 0;
+    
+    var addSlot = function(id) {
+      var s = document.createElement('div'); s.className = 'mm-slot' + (v.position === id ? ' active' : '');
+      s.onclick = function() { data.video.position = id; bindVideo(); commit(); };
+      mm.appendChild(s);
+    };
+    
+    addSlot('slot-0');
+    order.forEach(function(sec) {
+      slotIdx++;
+      var b = document.createElement('div'); b.className = 'mm-block';
+      b.textContent = SECTIONS.find(x => x.k === sec)?.label || sec;
+      mm.appendChild(b);
+      addSlot('slot-' + slotIdx);
+    });
+  }
     data = InviteStore.load();
     fillAll();
     iframe.addEventListener('load', pushPreview);

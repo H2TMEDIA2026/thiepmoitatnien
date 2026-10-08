@@ -63,12 +63,61 @@
     var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapQ);
     var embedUrl = 'https://www.google.com/maps?q=' + encodeURIComponent(mapQ) + '&output=embed';
 
-    var coverStyle = data.coverImage ? ' style="--cover:url(\'' + data.coverImage.replace(/'/g, '%27') + '\')"' : '';
+    var th = data.theme || window.INVITE_DEFAULT.theme;
+    if (th && th.colors) {
+      for (var k in th.colors) {
+        document.documentElement.style.setProperty('--' + k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()), th.colors[k]);
+      }
+      var metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', th.colors.pearl);
+    }
+    
+    var bgCss = '';
+    if (th && th.heroBg) {
+      if (th.heroBg.type === 'color') bgCss = th.heroBg.colors[0];
+      else if (th.heroBg.type === 'gradient2') bgCss = 'linear-gradient(' + th.heroBg.dir + ', ' + th.heroBg.colors[0] + ', ' + th.heroBg.colors[1] + ')';
+      else bgCss = (th.heroBg.dir.startsWith('to ') ? 'linear-gradient(' : 'radial-gradient(') + th.heroBg.dir + ', ' + th.heroBg.colors[0] + ' 0%, ' + th.heroBg.colors[1] + ' 50%, ' + (th.heroBg.colors[2]||th.heroBg.colors[1]) + ' 100%)';
+    }
+    var coverStyle = data.coverImage ? ' style="--cover:url(\'' + data.coverImage.replace(/'/g, '%27') + '\'); background:' + bgCss + '"' : (bgCss ? ' style="background:'+bgCss+'"' : '');
+
+    var v = data.video || window.INVITE_DEFAULT.video;
+    function getVideoHtml(isHero) {
+      if (!v || !v.enabled) return '';
+      var src = v.url.trim(); if (!src) return '';
+      var isYt = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+      var isVimeo = src.match(/vimeo\.com\/(\d+)/);
+      var isDrive = src.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+      var embed = '';
+      var autoStr = v.autoplay || isHero || isPreview ? '&autoplay=1&mute=1' : '';
+      var loopStr = v.loop || isHero ? '&loop=1' : '';
+      var ctrlStr = v.controls && !isHero ? '&controls=1' : '&controls=0';
+      if (isYt) embed = '<iframe src="https://www.youtube-nocookie.com/embed/' + isYt[1] + '?rel=0' + autoStr + loopStr + ctrlStr + (loopStr ? '&playlist=' + isYt[1] : '') + '" allow="autoplay; fullscreen" loading="lazy"></iframe>';
+      else if (isVimeo) embed = '<iframe src="https://player.vimeo.com/video/' + isVimeo[1] + '?title=0&byline=0&portrait=0' + autoStr.replace('&mute=1', '&muted=1') + loopStr + '" allow="autoplay; fullscreen" loading="lazy"></iframe>';
+      else if (isDrive) embed = '<iframe src="https://drive.google.com/file/d/' + isDrive[1] + '/preview" allow="autoplay; fullscreen" loading="lazy"></iframe>';
+      else embed = '<video src="' + esc(src) + '"' + (v.poster ? ' poster="'+esc(v.poster)+'"' : '') + (v.autoplay || isHero || isPreview ? ' autoplay muted playsinline' : '') + (v.loop || isHero ? ' loop' : '') + (v.controls && !isHero ? ' controls' : '') + '></video>';
+      
+      if (isHero) return '<div class="v-hero">' + embed + '</div>';
+      var html = '<div class="v-wrap v-' + v.frameStyle + ' v-ratio-' + v.aspectRatio.replace(':', '-') + '">' + embed + '</div>';
+      if (v.title || v.caption) {
+        html += '<div class="v-text">';
+        if (v.title) html += '<p class="v-title">' + esc(v.title) + '</p>';
+        if (v.caption) html += '<p class="v-cap">' + esc(v.caption) + '</p>';
+        html += '</div>';
+      }
+      return html;
+    }
 
     var html = '';
+    var vSlot = function(id) {
+      if (v && v.enabled && v.position === id) {
+        return '<div class="v-slot wrap center" id="' + id + '">' + getVideoHtml(false) + '</div>';
+      }
+      return '';
+    };
 
     /* ---------- HERO ---------- */
-    html += '<header class="hero' + (data.coverImage ? ' has-cover' : '') + '"' + coverStyle + '>' +
+    html += '<header class="hero' + (data.coverImage ? ' has-cover' : '') + '"' + coverStyle + ' id="hero">' +
+      (v.position === 'hero' ? getVideoHtml(true) : '') +
       '<svg class="arches" viewBox="0 0 400 600" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' +
       '<path d="M30 600V210a170 170 0 0 1 340 0v390"/><path d="M54 600V210a146 146 0 0 1 292 0v390"/><path d="M78 600V210a122 122 0 0 1 244 0v390"/></svg>' +
       '<div class="thread" aria-hidden="true"></div>' +
@@ -86,64 +135,76 @@
       '<a class="scroll-cue fade" style="--d:4.6s" href="#loi-moi" aria-label="Cuộn xuống"><i></i></a>' +
     '</header>';
 
-    /* ---------- LỜI MỜI ---------- */
-    html += '<section class="sec sec--pearl" id="loi-moi"><div class="wrap wrap--s center">' +
-      (data.introImage ? '<figure class="arch-photo reveal"><img src="' + esc(data.introImage) + '" alt="" loading="lazy"></figure>' : '') +
-      '<p class="lead reveal">' + nl2br(data.intro) + '</p>' +
-    '</div></section>';
+    html += vSlot('slot-0');
 
-    /* ---------- THỜI GIAN ---------- */
-    var timeline = (data.schedule || []).map(function (s) {
-      return '<li><span class="t-time">' + esc(s.time) + '</span><span class="t-text">' + esc(s.text) + '</span></li>';
-    }).join('');
-    html += '<section class="sec sec--cocoa" id="thoi-gian"><div class="wrap">' +
-      '<div class="center reveal"><h2 class="h2">Ngày ' + pad(dt.d) + ' tháng ' + pad(dt.m) + '</h2>' +
-      '<p class="sub">' + weekday + ', năm ' + dt.y + '</p>' +
-      (cd ? '<p class="count">' + cd + '</p>' : '') + '</div>' +
-      '<div class="when-grid reveal">' + calendar(dt) +
-        '<ol class="timeline">' + timeline + '</ol></div>' +
-      '<div class="center reveal"><button type="button" class="btn btn--on-dark" id="add-cal">Thêm vào lịch</button></div>' +
-    '</div></section>';
+    var sBgs = th.sections || {};
+    var secOrder = data.sectionOrder || ["loi-moi", "thoi-gian", "dia-diem", "dress-code", "hinh-anh", "cam-on"];
+    var slotIdx = 1;
 
-    /* ---------- ĐỊA ĐIỂM ---------- */
-    html += '<section class="sec sec--pearl" id="dia-diem"><div class="wrap wrap--s center">' +
-      '<div class="reveal"><h2 class="h2 h2--dark">' + esc(data.venue) + '</h2>' +
-      '<address class="address">' + nl2br(data.address) + '</address>' +
-      '<a class="btn" href="' + mapsUrl + '" target="_blank" rel="noopener">Chỉ đường</a></div>' +
-      (data.showMap ? '<div class="map reveal"><iframe title="Bản đồ ' + esc(data.venue) + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + embedUrl + '"></iframe></div>' : '') +
-    '</div></section>';
-
-    /* ---------- DRESS CODE ---------- */
-    var names = (data.dressColors || []).map(function (c) { return esc(c.name); }).join(' · ');
-    var sw = (data.dressColors || []).map(function (c) {
-      return '<li><i style="--c:' + esc(c.hex) + '"></i><span>' + esc(c.name) + '</span></li>';
-    }).join('');
-    html += '<section class="sec sec--linen" id="dress-code"><div class="wrap wrap--s center reveal">' +
-      '<h2 class="h2 h2--dark">' + esc(data.dressTitle) + '</h2>' +
-      '<p class="sub sub--dark">' + names + '</p>' +
-      '<ul class="swatches">' + sw + '</ul>' +
-      (data.dressNote ? '<p class="small">' + nl2br(data.dressNote) + '</p>' : '') +
-    '</div></section>';
-
-    /* ---------- THƯ VIỆN ẢNH ---------- */
-    if (data.gallery && data.gallery.length) {
-      html += '<section class="sec sec--pearl" id="hinh-anh"><div class="wrap"><div class="gallery reveal">' +
-        data.gallery.map(function (src) {
-          return '<button type="button" class="g-item" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt="" loading="lazy"></button>';
-        }).join('') + '</div></div></section>';
-    }
-
-    /* ---------- LƯU Ý + CẢM ƠN ---------- */
-    html += '<section class="sec sec--sand" id="cam-on"><div class="wrap wrap--s center reveal">' +
-      '<p class="note">' + nl2br(data.note) + '</p>' +
-      '<p class="lead lead--sm">' + nl2br(data.thanks) + '</p>' +
-      '<p class="closing">' + esc(data.closing) + '</p>' +
-      (data.rsvpLink ? '<a class="btn btn--solid" href="' + esc(data.rsvpLink) + '" target="_blank" rel="noopener">' + esc(data.rsvpLabel || 'Xác nhận tham dự') + '</a>' : '') +
-    '</div></section>';
+    secOrder.forEach(function(sec) {
+      if (sec === 'loi-moi') {
+        html += '<section class="sec sec--' + (sBgs['loi-moi'] || 'pearl') + '" id="loi-moi"><div class="wrap wrap--s center">' +
+          (data.introImage ? '<figure class="arch-photo reveal"><img src="' + esc(data.introImage) + '" alt="" loading="lazy"></figure>' : '') +
+          '<p class="lead reveal">' + nl2br(data.intro) + '</p>' +
+        '</div></section>';
+      } else if (sec === 'thoi-gian') {
+        var timeline = (data.schedule || []).map(function (s) { return '<li><span class="t-time">' + esc(s.time) + '</span><span class="t-text">' + esc(s.text) + '</span></li>'; }).join('');
+        html += '<section class="sec sec--' + (sBgs['thoi-gian'] || 'cocoa') + '" id="thoi-gian"><div class="wrap">' +
+          '<div class="center reveal"><h2 class="h2' + (sBgs['thoi-gian'] !== 'cocoa' ? ' h2--dark' : '') + '">Ngày ' + pad(dt.d) + ' tháng ' + pad(dt.m) + '</h2>' +
+          '<p class="sub' + (sBgs['thoi-gian'] !== 'cocoa' ? ' sub--dark' : '') + '">' + weekday + ', năm ' + dt.y + '</p>' +
+          (cd ? '<p class="count">' + cd + '</p>' : '') + '</div>' +
+          '<div class="when-grid reveal">' + calendar(dt) + '<ol class="timeline">' + timeline + '</ol></div>' +
+          '<div class="center reveal"><button type="button" class="btn ' + (sBgs['thoi-gian'] === 'cocoa' ? 'btn--on-dark' : '') + '" id="add-cal">Thêm vào lịch</button></div>' +
+        '</div></section>';
+      } else if (sec === 'dia-diem') {
+        html += '<section class="sec sec--' + (sBgs['dia-diem'] || 'pearl') + '" id="dia-diem"><div class="wrap wrap--s center">' +
+          '<div class="reveal"><h2 class="h2 ' + (sBgs['dia-diem'] !== 'cocoa' ? 'h2--dark' : '') + '">' + esc(data.venue) + '</h2>' +
+          '<address class="address">' + nl2br(data.address) + '</address>' +
+          '<a class="btn ' + (sBgs['dia-diem'] === 'cocoa' ? 'btn--on-dark' : '') + '" href="' + mapsUrl + '" target="_blank" rel="noopener">Chỉ đường</a></div>' +
+          (data.showMap ? '<div class="map reveal"><iframe title="Bản đồ ' + esc(data.venue) + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + embedUrl + '"></iframe></div>' : '') +
+        '</div></section>';
+      } else if (sec === 'dress-code') {
+        var names = (data.dressColors || []).map(function (c) { return esc(c.name); }).join(' · ');
+        var sw = (data.dressColors || []).map(function (c) { return '<li><i style="--c:' + esc(c.hex) + '"></i><span>' + esc(c.name) + '</span></li>'; }).join('');
+        html += '<section class="sec sec--' + (sBgs['dress-code'] || 'linen') + '" id="dress-code"><div class="wrap wrap--s center reveal">' +
+          '<h2 class="h2 ' + (sBgs['dress-code'] !== 'cocoa' ? 'h2--dark' : '') + '">' + esc(data.dressTitle) + '</h2>' +
+          '<p class="sub ' + (sBgs['dress-code'] !== 'cocoa' ? 'sub--dark' : '') + '">' + names + '</p>' +
+          '<ul class="swatches">' + sw + '</ul>' +
+          (data.dressNote ? '<p class="small">' + nl2br(data.dressNote) + '</p>' : '') +
+        '</div></section>';
+      } else if (sec === 'hinh-anh') {
+        if (data.gallery && data.gallery.length) {
+          html += '<section class="sec sec--' + (sBgs['hinh-anh'] || 'pearl') + '" id="hinh-anh"><div class="wrap"><div class="gallery reveal">' +
+            data.gallery.map(function (src) { return '<button type="button" class="g-item" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt="" loading="lazy"></button>'; }).join('') + 
+          '</div></div></section>';
+        }
+      } else if (sec === 'cam-on') {
+        html += '<section class="sec sec--' + (sBgs['cam-on'] || 'sand') + '" id="cam-on"><div class="wrap wrap--s center reveal">' +
+          '<p class="note">' + nl2br(data.note) + '</p>' +
+          '<p class="lead lead--sm">' + nl2br(data.thanks) + '</p>' +
+          '<p class="closing">' + esc(data.closing) + '</p>' +
+          (data.rsvpLink ? '<a class="btn ' + (sBgs['cam-on'] === 'cocoa' ? 'btn--on-dark btn--solid' : 'btn--solid') + '" href="' + esc(data.rsvpLink) + '" target="_blank" rel="noopener">' + esc(data.rsvpLabel || 'Xác nhận tham dự') + '</a>' : '') +
+        '</div></section>';
+      }
+      html += vSlot('slot-' + slotIdx);
+      slotIdx++;
+    });
 
     html += '<footer class="foot"><p>' + esc(data.brand) + ' · ' + esc(data.eventName) + '</p></footer>';
 
+    if (v && v.enabled && v.position === 'floating') {
+      html += '<button type="button" class="v-floating" id="btn-floating" aria-label="Xem clip">' +
+        '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
+    }
+
     app.innerHTML = html;
+    
+    // Inject floating video to dialog if needed
+    if (v && v.enabled && v.position === 'floating') {
+      var dIn = document.getElementById('video-dialog-inner');
+      if (dIn) dIn.innerHTML = getVideoHtml(false);
+    }
+
     bind(opts.instant);
   }
 
@@ -184,6 +245,27 @@
         if (lb.showModal) lb.showModal(); else lb.setAttribute('open', '');
       });
     });
+
+    /* xem video */
+    var btnFloat = document.getElementById('btn-floating');
+    var vDialog = document.getElementById('video-dialog');
+    if (btnFloat && vDialog) {
+      btnFloat.addEventListener('click', function() {
+        if (vDialog.showModal) vDialog.showModal(); else vDialog.setAttribute('open', '');
+      });
+    }
+    if (vDialog) {
+      var stopVideo = function() {
+        var v = vDialog.querySelector('video'); if (v) v.pause();
+        var ifm = vDialog.querySelector('iframe'); if (ifm) { var s = ifm.src; ifm.src = ''; ifm.src = s; }
+      };
+      vDialog.addEventListener('close', stopVideo);
+      vDialog.addEventListener('click', function (e) {
+        if (e.target === vDialog || e.target.tagName === 'BUTTON') { 
+          if (vDialog.close) vDialog.close(); else { vDialog.removeAttribute('open'); stopVideo(); }
+        }
+      });
+    }
   }
 
   function downloadIcs() {
@@ -218,8 +300,13 @@
   /* xem trước trực tiếp từ trang admin */
   if (isPreview) {
     window.addEventListener('message', function (e) {
-      if (e.source !== window.parent || !e.data || e.data.type !== 'h2t-preview') return;
-      render(Object.assign(window.InviteStore.defaults(), e.data.data), { instant: true });
+      if (e.source !== window.parent || !e.data) return;
+      if (e.data.type === 'h2t-preview') {
+        render(Object.assign(window.InviteStore.defaults(), e.data.data), { instant: true });
+      } else if (e.data.type === 'h2t-scroll') {
+        var el = document.getElementById(e.data.pos);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
   }
 
