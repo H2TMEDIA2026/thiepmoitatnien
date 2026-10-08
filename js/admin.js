@@ -378,6 +378,7 @@
       addSlot('slot-' + slotIdx);
     });
   }
+  function init() {
     data = InviteStore.load();
     fillAll();
     iframe.addEventListener('load', pushPreview);
