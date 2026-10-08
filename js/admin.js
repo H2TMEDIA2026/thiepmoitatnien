@@ -227,7 +227,12 @@
   ];
   
   function renderThemes() {
-    if(!data.theme) data.theme = InviteStore.defaults().theme;
+    var def = InviteStore.defaults().theme;
+    if(!data.theme) data.theme = {};
+    data.theme.colors = Object.assign({}, def.colors, data.theme.colors || {});
+    data.theme.heroBg = Object.assign({}, def.heroBg, data.theme.heroBg || {});
+    if(!data.theme.heroBg.colors) data.theme.heroBg.colors = [].concat(def.heroBg.colors);
+    data.theme.sections = Object.assign({}, def.sections, data.theme.sections || {});
     
     // Presets
     var tBox = $('#theme-presets'); tBox.innerHTML = '';
@@ -317,7 +322,9 @@
 
   /* ---------- VIDEO ---------- */
   function bindVideo() {
-    if(!data.video) data.video = InviteStore.defaults().video;
+    var def = InviteStore.defaults().video;
+    if(!data.video) data.video = {};
+    data.video = Object.assign({}, def, data.video);
     var v = data.video;
     
     $('#video-enabled').checked = v.enabled;
