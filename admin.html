@@ -80,11 +80,19 @@
         <div id="video-settings" hidden>
           <label>Nguồn clip<select id="video-source-type">
             <option value="youtube">Link YouTube / Vimeo</option>
-            <option value="file">Đường dẫn file (.mp4, .webm)</option>
+            <option value="url">Đường dẫn tự do (URL / Thư mục media/)</option>
             <option value="drive">Link Google Drive</option>
+            <option value="upload">Tải clip trực tiếp (File nhỏ)</option>
           </select></label>
-          <label>Đường dẫn clip<input id="video-url" placeholder="https://... hoặc media/clip.mp4"></label>
-          <p class="hint">Video nặng nên đưa lên YouTube/Vimeo (Không công khai). File nhỏ (<25MB) có thể lưu vào thư mục media/ rồi dán đường dẫn media/ten-file.mp4.</p>
+          
+          <div id="video-input-url">
+            <label>Đường dẫn clip<input id="video-url" placeholder="https://... hoặc media/clip.mp4"></label>
+            <p class="hint">Video nặng nên đưa lên YouTube/Vimeo (Không công khai). Hoặc tải file bằng FTP vào thư mục media/ rồi nhập media/ten-file.mp4.</p>
+          </div>
+          <div id="video-input-upload" hidden>
+            <label class="btn btn--solid" style="display:inline-block; margin-top:8px; margin-bottom: 8px;">Tải clip từ máy tính<input type="file" id="video-file" accept="video/mp4,video/webm" hidden></label>
+            <p class="hint">Lưu ý: Chỉ hỗ trợ video ngắn và cực nhẹ (< 4MB) do giới hạn lưu trữ của trình duyệt web (LocalStorage). Nếu lớn hơn, hãy dùng link YouTube.</p>
+          </div>
           
           <div id="img-poster" class="imgfield"></div>
           
@@ -99,17 +107,19 @@
             <label class="check"><input type="checkbox" id="video-controls"> Hiện nút điều khiển</label>
           </div>
           
-          <label style="margin-top: 12px">Vị trí hiển thị</label>
-          <div class="row row--btn">
-            <button class="btn btn--small" type="button" data-vpos="slot-0">Ngay sau tên khách</button>
-            <button class="btn btn--small" type="button" data-vpos="slot-1">Sau lời mời</button>
-            <button class="btn btn--small" type="button" data-vpos="slot-2">Sau ngày giờ</button>
-            <button class="btn btn--small" type="button" data-vpos="slot-3">Sau địa điểm</button>
-            <button class="btn btn--small" type="button" data-vpos="slot-5">Cuối thư mời</button>
-            <button class="btn btn--small" type="button" data-vpos="hero">Nền đầu trang</button>
-            <button class="btn btn--small" type="button" data-vpos="floating">Nút nổi</button>
-          </div>
-          <div class="minimap" id="video-minimap"></div>
+          <label style="margin-top: 12px">Vị trí hiển thị
+            <select id="video-position">
+              <option value="hero">Nền phần Đầu trang (Hero)</option>
+              <option value="slot-0">Dưới tên khách</option>
+              <option value="slot-1">Dưới phần Lời mời</option>
+              <option value="slot-2">Dưới phần Thời gian</option>
+              <option value="slot-3">Dưới phần Địa điểm</option>
+              <option value="slot-4">Dưới phần Dress code</option>
+              <option value="slot-5">Dưới phần Hình ảnh</option>
+              <option value="slot-6">Dưới phần Cảm ơn (Cuối trang)</option>
+              <option value="floating">Nút tròn nổi ở góc màn hình</option>
+            </select>
+          </label>
           
           <div class="row" id="video-frame-opts">
             <label>Kiểu khung<select id="video-frame">

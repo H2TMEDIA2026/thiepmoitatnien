@@ -343,46 +343,47 @@
     imgField('#img-poster', 'videoPoster', 'Ảnh bìa video', '');
     data.videoPoster = v.poster; // binding for imgField
     
-    var bindEvts = ['sourceType', 'url', 'title', 'caption', 'frameStyle', 'aspectRatio'];
+    var bindEvts = ['url', 'title', 'caption', 'frameStyle', 'aspectRatio', 'position'];
     bindEvts.forEach(function(k) {
       var el = $('#video-' + k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()));
-      if (el) el.onchange = function() { data.video[k] = this.value; commit(); };
+      if (el) {
+        el.value = v[k] || '';
+        el.onchange = function() { 
+          data.video[k] = this.value; commit(); 
+          if(k === 'position') {
+            setTimeout(function() {
+              if(iframe.contentWindow) iframe.contentWindow.postMessage({ type: 'h2t-scroll', pos: data.video.position }, '*');
+            }, 100);
+          }
+        };
+      }
     });
+
+    $('#video-source-type').onchange = function() {
+      var t = this.value;
+      data.video.sourceType = t;
+      $('#video-input-url').hidden = (t === 'upload');
+      $('#video-input-upload').hidden = (t !== 'upload');
+      commit();
+    };
+    $('#video-source-type').value = v.sourceType || 'youtube';
+    $('#video-source-type').onchange();
+    
+    $('#video-file').onchange = function(e) {
+      var f = e.target.files[0]; if(!f) return;
+      if (f.size > 4 * 1024 * 1024) { setStatus('Video quá lớn, dung lượng tối đa 4MB.', true); e.target.value = ''; return; }
+      var fr = new FileReader();
+      fr.onload = function() { 
+        data.video.url = fr.result; 
+        $('#video-url').value = data.video.url; 
+        commit(); 
+        setStatus('Đã tải clip lên trình duyệt!'); 
+      };
+      fr.readAsDataURL(f);
+    };
+
     ['autoplay', 'loop', 'controls'].forEach(function(k) {
       $('#video-' + k).onchange = function() { data.video[k] = this.checked; commit(); };
-    });
-    
-    var btns = document.querySelectorAll('[data-vpos]');
-    btns.forEach(function(btn) {
-      if (btn.dataset.vpos === v.position) btn.classList.add('btn--solid'); else btn.classList.remove('btn--solid');
-      btn.onclick = function() {
-        data.video.position = this.dataset.vpos;
-        bindVideo(); commit();
-        // scroll iframe
-        setTimeout(function() {
-           if(iframe.contentWindow) iframe.contentWindow.postMessage({ type: 'h2t-scroll', pos: data.video.position }, '*');
-        }, 100);
-      };
-    });
-    
-    // Minimap
-    var mm = $('#video-minimap'); mm.innerHTML = '';
-    var order = data.sectionOrder || ["loi-moi", "thoi-gian", "dia-diem", "dress-code", "hinh-anh", "cam-on"];
-    var slotIdx = 0;
-    
-    var addSlot = function(id) {
-      var s = document.createElement('div'); s.className = 'mm-slot' + (v.position === id ? ' active' : '');
-      s.onclick = function() { data.video.position = id; bindVideo(); commit(); };
-      mm.appendChild(s);
-    };
-    
-    addSlot('slot-0');
-    order.forEach(function(sec) {
-      slotIdx++;
-      var b = document.createElement('div'); b.className = 'mm-block';
-      b.textContent = SECTIONS.find(x => x.k === sec)?.label || sec;
-      mm.appendChild(b);
-      addSlot('slot-' + slotIdx);
     });
   }
   function init() {
