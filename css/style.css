@@ -229,7 +229,7 @@ body::before {
 .foot p { margin: 0; }
 
 /* ---------- VIDEO ---------- */
-.v-slot { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 40px 0; }
+.v-slot { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 40px auto; }
 @media (min-width: 900px) {
   .v-align-left { float: left; width: 45%; margin: 0 4% 40px 0 !important; }
   .v-align-right { float: right; width: 45%; margin: 0 0 40px 4% !important; }
