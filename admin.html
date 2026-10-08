@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý thư mời — H2T Media Group</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- Khóa đăng nhập đơn giản (chỉ để chặn người xem tò mò, không phải bảo mật thật) -->
+<div id="gate" class="gate" hidden>
+  <div class="gate-box">
+    <h1>Quản lý thư mời</h1>
+    <p>Nhập mật khẩu để chỉnh sửa thư mời.</p>
+    <input id="gate-pass" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+    <button id="gate-btn" class="btn btn--solid" type="button">Đăng nhập</button>
+    <p id="gate-err" class="err" hidden>Mật khẩu chưa đúng. Thử lại nhé.</p>
+  </div>
+</div>
+
+<div id="admin" hidden>
+  <header class="bar">
+    <div>
+      <h1>Quản lý thư mời</h1>
+      <p id="status" class="status" role="status">Đã tải dữ liệu</p>
+    </div>
+    <div class="bar-actions">
+      <a class="btn" href="index.html" target="_blank" rel="noopener">Mở thư mời</a>
+      <button class="btn" id="btn-export" type="button">Tải data.js</button>
+      <label class="btn">Nhập dữ liệu<input id="file-import" type="file" accept=".js,.json" hidden></label>
+      <button class="btn btn--ghost" id="btn-reset" type="button">Khôi phục mặc định</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <form class="panel" id="form" onsubmit="return false" autocomplete="off">
+
+      <section class="card">
+        <h2>Thông tin chung</h2>
+        <label>Tên đơn vị<input data-k="brand"></label>
+        <label>Tên sự kiện<input data-k="eventName"></label>
+        <label>Tiêu đề phụ<input data-k="subtitle"></label>
+        <label>Câu mời<input data-k="inviteLabel"></label>
+        <div class="row">
+          <label>Xưng hô trước tên khách<input data-k="guestPrefix"></label>
+          <label>Tên hiển thị khi không có tên khách<input data-k="defaultGuest"></label>
+        </div>
+        <label>Lời mời<textarea data-k="intro" rows="4"></textarea></label>
+      </section>
+
+      <section class="card">
+        <h2>Thời gian và lịch trình</h2>
+        <div class="row row--3">
+          <label>Ngày<input type="date" data-k="date"></label>
+          <label>Giờ bắt đầu (cho lịch)<input type="time" data-k="timeStart"></label>
+          <label>Giờ kết thúc (cho lịch)<input type="time" data-k="timeEnd"></label>
+        </div>
+        <p class="hint">Các mốc giờ hiển thị trên thư mời:</p>
+        <div id="schedule" class="list"></div>
+        <button class="btn btn--small" type="button" id="add-schedule">Thêm mốc giờ</button>
+      </section>
+
+      <section class="card">
+        <h2>Địa điểm</h2>
+        <label>Tên địa điểm<input data-k="venue"></label>
+        <label>Địa chỉ<textarea data-k="address" rows="2"></textarea></label>
+        <label>Từ khóa tìm trên Google Maps<input data-k="mapQuery"></label>
+        <label class="check"><input type="checkbox" data-k="showMap"> Hiện bản đồ trên thư mời</label>
+      </section>
+
+      <section class="card">
+        <h2>Dress code</h2>
+        <label>Tiêu đề<input data-k="dressTitle"></label>
+        <div id="colors" class="list"></div>
+        <button class="btn btn--small" type="button" id="add-color">Thêm màu</button>
+        <label>Ghi chú thêm (không bắt buộc)<textarea data-k="dressNote" rows="2"></textarea></label>
+      </section>
+
+      <section class="card">
+        <h2>Hình ảnh</h2>
+        <div id="img-cover" class="imgfield"></div>
+        <div id="img-intro" class="imgfield"></div>
+        <p class="hint">Thư viện ảnh</p>
+        <div id="gallery" class="thumbs"></div>
+        <div class="row row--btn">
+          <label class="btn btn--small">Tải ảnh lên<input id="gallery-file" type="file" accept="image/*" multiple hidden></label>
+          <input id="gallery-url" placeholder="hoặc dán đường dẫn ảnh, ví dụ images/anh1.jpg">
+          <button class="btn btn--small" type="button" id="gallery-url-btn">Thêm</button>
+        </div>
+        <p class="hint">Ảnh tải lên được nén và lưu trong trình duyệt này. Muốn chia sẻ cho mọi khách: chép ảnh vào thư mục <code>images/</code> rồi dùng đường dẫn.</p>
+      </section>
+
+      <section class="card">
+        <h2>Lưu ý và lời cảm ơn</h2>
+        <label>Lưu ý<textarea data-k="note" rows="3"></textarea></label>
+        <label>Lời cảm ơn<textarea data-k="thanks" rows="2"></textarea></label>
+        <label>Câu kết<input data-k="closing"></label>
+        <div class="row">
+          <label>Chữ trên nút xác nhận<input data-k="rsvpLabel"></label>
+          <label>Link xác nhận (Zalo, Google Form…) — để trống nếu không dùng<input data-k="rsvpLink" placeholder="https://"></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Tạo link cho từng khách</h2>
+        <p class="hint">Mỗi dòng một tên khách. Link sẽ hiển thị đúng tên đó trên thư mời.</p>
+        <textarea id="guests" rows="5" placeholder="Nguyễn Văn A&#10;Trần Thị B"></textarea>
+        <div class="row row--btn">
+          <button class="btn btn--small" type="button" id="make-links">Tạo link</button>
+          <button class="btn btn--small btn--ghost" type="button" id="copy-all">Sao chép tất cả</button>
+        </div>
+        <ul id="links" class="links"></ul>
+      </section>
+    </form>
+
+    <aside class="preview">
+      <div class="preview-head">
+        <span>Xem trước</span>
+        <button class="btn btn--small" type="button" id="replay">Phát lại hiệu ứng</button>
+      </div>
+      <iframe id="preview" title="Xem trước thư mời" src="index.html?preview=1&to=Nguy%E1%BB%85n%20V%C4%83n%20A"></iframe>
+    </aside>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

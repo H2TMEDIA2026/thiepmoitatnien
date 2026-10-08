@@ -1,0 +1,245 @@
+/* ============================================================
+   H2T Year End Party 2026 — thư mời
+   Tone màu bám theo dress code: Trắng · Be · Nude
+   ============================================================ */
+:root {
+  --pearl: #FBF8F3;      /* trắng ngọc trai */
+  --linen: #F1E9DF;      /* be nhạt */
+  --sand: #E6D8C6;       /* be đậm */
+  --nude: #D4B49C;       /* nude */
+  --taupe: #7A685A;      /* chữ phụ */
+  --cocoa: #33271F;      /* nâu cacao, chữ chính + nền tương phản */
+  --gold: #B38F5E;       /* champagne cho đường kẻ, nền tối */
+  --gold-ink: #7F5F35;   /* champagne đậm cho chữ trên nền sáng */
+  --gold-soft: #DCC49A;  /* champagne sáng cho chữ trên nền tối */
+  --serif: 'Playfair Display', 'Times New Roman', serif;
+  --sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--pearl); color: var(--cocoa);
+  font-family: var(--sans); font-weight: 300; line-height: 1.7; font-size: 16px;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* Hiệu ứng giấy nhám (Premium Paper Texture) */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply; opacity: 0.8;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  position: relative; min-height: 100svh; display: grid; place-items: center;
+  padding: clamp(150px, 22vh, 220px) 24px 110px; text-align: center; overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 0%, #fff 0%, var(--pearl) 45%, var(--linen) 100%);
+}
+.hero.has-cover::before {
+  content: ''; position: absolute; inset: 0; background: var(--cover) center/cover no-repeat; opacity: .28;
+}
+.hero.has-cover::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(251,248,243,.78), rgba(251,248,243,.55) 50%, rgba(241,233,223,.9));
+}
+.arches {
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(94vw, 640px); height: 92%; z-index: 1; fill: none;
+  stroke: var(--gold); stroke-width: .7; opacity: .38;
+  stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: drawArch 3s var(--ease) .5s forwards;
+}
+@keyframes drawArch { to { stroke-dashoffset: 0; } }
+.hero-inner { position: relative; z-index: 2; max-width: 880px; }
+
+/* sợi chỉ champagne rủ từ trên xuống, treo cả bố cục */
+.thread {
+  position: absolute; z-index: 2; top: 0; left: 50%; width: 1px; height: clamp(84px, 16vh, 150px);
+  background: linear-gradient(var(--gold), var(--gold));
+  transform-origin: top; transform: scaleY(0); animation: thread 1.2s var(--ease) .1s forwards;
+}
+.thread::after {
+  content: ''; position: absolute; left: -3px; bottom: -4px; width: 7px; height: 7px;
+  background: var(--gold); transform: rotate(45deg) scale(0); animation: pop .5s var(--ease) 1.1s forwards;
+}
+@keyframes thread { to { transform: scaleY(1); } }
+@keyframes pop { to { transform: rotate(45deg) scale(1); } }
+
+.brand {
+  margin: 0 0 22px; font-size: .78rem; letter-spacing: .42em; font-weight: 400; color: var(--gold-ink);
+  background: linear-gradient(110deg, var(--gold-ink) 10%, #DCC49A 30%, var(--gold-ink) 50%);
+  background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: foil 4s linear infinite;
+}
+@keyframes foil { to { background-position: -200% center; } }
+.event {
+  margin: 0; font-family: var(--serif); font-weight: 300; line-height: 1.02;
+  font-size: clamp(2.7rem, 10.5vw, 6.4rem); letter-spacing: .05em; color: var(--cocoa);
+}
+.subtitle {
+  margin: 26px 0 0; font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1rem, 3.2vw, 1.35rem); letter-spacing: .38em; color: var(--gold-ink);
+}
+.invite-label {
+  margin: clamp(48px, 9vh, 84px) 0 6px; font-family: var(--serif); font-style: italic;
+  font-size: clamp(1.1rem, 3vw, 1.35rem); color: var(--taupe);
+}
+.guest { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.guest-prefix { font-size: .85rem; letter-spacing: .2em; color: var(--taupe); }
+.guest-name {
+  font-family: var(--serif); font-style: italic; font-weight: 500; line-height: 1.15;
+  font-size: clamp(2.3rem, 8.5vw, 4.4rem); color: var(--cocoa); padding: 0 .1em;
+}
+.guest-rule {
+  display: block; height: 1px; width: min(260px, 60vw); background: var(--gold);
+  transform: scaleX(0); animation: rule 1.2s var(--ease) 4.3s forwards;
+}
+@keyframes rule { to { transform: scaleX(1); } }
+
+/* thả chữ từ trên xuống */
+.w { display: inline-block; white-space: nowrap; }
+.ch {
+  display: inline-block; opacity: 0; transform: translateY(-1.2em) scale(0.95); filter: blur(6px);
+  animation: drop 1.1s cubic-bezier(.3, 1.25, .5, 1) forwards;
+  animation-delay: calc(var(--base, 0s) + var(--i) * 55ms);
+}
+@keyframes drop { 
+  to { opacity: 1; transform: none; filter: blur(0); } 
+}
+.fade { opacity: 0; animation: fadeIn 1.1s ease forwards; animation-delay: var(--d, 0s); }
+@keyframes fadeIn { to { opacity: 1; } }
+
+.scroll-cue {
+  position: absolute; z-index: 2; left: 50%; bottom: 28px; width: 24px; height: 44px; translate: -50% 0;
+}
+.scroll-cue i {
+  position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: var(--gold); opacity: .6;
+  transform-origin: top; animation: cue 2.2s ease-in-out infinite;
+}
+@keyframes cue { 0% { transform: scaleY(0); } 60% { transform: scaleY(1); opacity: .6; } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* ---------- KHỐI NỘI DUNG CHUNG ---------- */
+.sec { padding: clamp(80px, 13vw, 150px) 24px; }
+.sec--pearl { background: var(--pearl); }
+.sec--linen { background: var(--linen); }
+.sec--sand { background: var(--sand); }
+.sec--cocoa { background: var(--cocoa); color: var(--pearl); }
+.wrap { max-width: 980px; margin: 0 auto; }
+.wrap--s { max-width: 640px; }
+.center { text-align: center; }
+
+.reveal { 
+  opacity: 0; transform: translateY(35px) scale(0.96) rotateX(-4deg); 
+  transform-origin: top center; transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+.h2 {
+  margin: 0; font-family: var(--serif); font-weight: 400; line-height: 1.1;
+  font-size: clamp(2.2rem, 7vw, 3.8rem); color: var(--pearl); letter-spacing: .01em;
+}
+.h2--dark { color: var(--cocoa); }
+.sub { margin: 12px 0 0; font-family: var(--serif); font-size: 1.35rem; font-style: italic; color: var(--gold-soft); }
+.sub--dark { color: var(--gold-ink); letter-spacing: .12em; font-style: normal; font-weight: 500; }
+.count { margin: 18px 0 0; font-size: .9rem; color: var(--sand); letter-spacing: .04em; }
+.small { margin: 28px auto 0; font-size: .92rem; color: var(--taupe); max-width: 46ch; }
+
+.lead { margin: 0; font-family: var(--serif); font-size: clamp(1.35rem, 3.6vw, 1.85rem); line-height: 1.6; font-weight: 400; }
+.lead--sm { font-size: clamp(1.15rem, 3vw, 1.4rem); margin-top: 30px; }
+
+.arch-photo { margin: 0 auto 56px; width: min(320px, 78vw); aspect-ratio: 3 / 4; border-radius: 999px 999px 0 0; overflow: hidden; background: var(--linen); }
+.arch-photo img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); transition: transform 2.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.in .arch-photo img { transform: scale(1); }
+
+/* ---------- LỊCH + LỊCH TRÌNH ---------- */
+.when-grid { display: grid; gap: 56px; margin: 64px 0 56px; }
+@media (min-width: 820px) { .when-grid { grid-template-columns: minmax(0, 340px) 1fr; gap: 96px; align-items: center; } }
+.cal { width: 100%; max-width: 340px; margin: 0 auto; }
+.cal-title { margin: 0 0 18px; text-align: center; font-family: var(--serif); font-size: 1.25rem; color: var(--gold-soft); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0; text-align: center; font-size: .86rem; }
+.cal-grid b { font-weight: 400; color: var(--nude); font-size: .72rem; padding-bottom: 8px; }
+.cal-grid span { display: grid; place-items: center; aspect-ratio: 1; color: rgba(251,248,243,.78); }
+.cal-grid span.on {
+  background: var(--gold); color: var(--cocoa); font-weight: 500; border-radius: 50%;
+  box-shadow: 0 0 0 5px rgba(179,143,94,.22);
+}
+.timeline { list-style: none; margin: 0; padding: 0 0 0 30px; border-left: 1px solid rgba(220,196,154,.45); display: grid; gap: 40px; }
+.timeline li { position: relative; display: grid; gap: 4px; }
+.timeline li::before {
+  content: ''; position: absolute; left: -35.5px; top: .55em; width: 9px; height: 9px;
+  background: var(--cocoa); border: 1px solid var(--gold-soft); transform: rotate(45deg);
+}
+.t-time { font-family: var(--serif); font-size: clamp(1.7rem, 4.5vw, 2.3rem); line-height: 1.15; color: var(--gold-soft); }
+.t-text { color: rgba(251,248,243,.88); max-width: 40ch; }
+
+/* ---------- NÚT ---------- */
+.btn {
+  position: relative; overflow: hidden; display: inline-block; padding: 14px 34px; 
+  border: 1px solid var(--gold-ink); border-radius: 999px; background: transparent; 
+  color: var(--gold-ink); font: 400 .92rem/1 var(--sans); letter-spacing: .06em;
+  text-decoration: none; cursor: pointer; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: skewX(-20deg); transition: 0s;
+}
+.btn:hover { background: var(--gold-ink); color: var(--pearl); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(127,95,53,.25); }
+.btn:hover::after { left: 200%; transition: left .7s ease; }
+
+.btn--on-dark { border-color: var(--gold-soft); color: var(--gold-soft); }
+.btn--on-dark:hover { background: var(--gold-soft); color: var(--cocoa); box-shadow: 0 8px 24px rgba(220,196,154,.25); }
+.btn--solid { background: var(--cocoa); border-color: var(--cocoa); color: var(--pearl); margin-top: 38px; }
+.btn--solid::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); }
+.btn--solid:hover { background: transparent; color: var(--cocoa); border-color: var(--cocoa); box-shadow: 0 8px 24px rgba(51,39,31,.15); }
+
+/* ---------- ĐỊA ĐIỂM ---------- */
+.address { margin: 18px 0 34px; font-style: normal; color: var(--taupe); }
+.map { margin-top: 56px; border-radius: 999px 999px 0 0; overflow: hidden; aspect-ratio: 4 / 3; background: var(--linen); }
+.map iframe { width: 100%; height: 100%; border: 0; filter: sepia(.35) saturate(.7) contrast(.95); }
+
+/* ---------- DRESS CODE ---------- */
+.swatches { list-style: none; margin: 44px 0 0; padding: 0; display: flex; justify-content: center; gap: clamp(20px, 6vw, 44px); flex-wrap: wrap; }
+.swatches li { display: grid; gap: 14px; justify-items: center; font-family: var(--serif); font-size: 1.25rem; }
+.swatches i {
+  display: block; width: clamp(78px, 22vw, 104px); aspect-ratio: 1; border-radius: 50%; background: var(--c);
+  box-shadow: inset 0 0 0 1px rgba(51,39,31,.14), 0 14px 28px -16px rgba(51,39,31,.4);
+}
+
+/* ---------- GALLERY ---------- */
+.gallery { columns: 2 180px; column-gap: 14px; }
+@media (min-width: 760px) { .gallery { columns: 3 220px; } }
+.g-item { display: block; width: 100%; margin: 0 0 14px; padding: 0; border: 0; background: var(--linen); cursor: zoom-in; break-inside: avoid; overflow: hidden; }
+.g-item img { width: 100%; height: auto; transition: transform .8s var(--ease); }
+.g-item:hover img { transform: scale(1.03); }
+#lightbox { border: 0; padding: 0; background: transparent; max-width: 94vw; max-height: 94vh; overflow: visible; }
+#lightbox::backdrop { background: rgba(51,39,31,.86); }
+#lightbox img { max-width: 94vw; max-height: 90vh; margin: auto; }
+#lightbox button { position: absolute; top: -40px; right: 0; background: none; border: 0; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; }
+
+/* ---------- LƯU Ý + CẢM ƠN ---------- */
+.note { margin: 0; font-size: .98rem; color: var(--cocoa); max-width: 48ch; margin-inline: auto; }
+.closing { margin: 26px 0 0; font-family: var(--serif); font-style: italic; font-size: 1.8rem; color: var(--gold-ink); }
+.foot { padding: 34px 24px 44px; text-align: center; background: var(--cocoa); color: var(--sand); font-size: .78rem; letter-spacing: .24em; }
+.foot p { margin: 0; }
+
+/* ---------- ƯU TIÊN GIẢM CHUYỂN ĐỘNG / CHẾ ĐỘ XEM TRƯỚC ---------- */
+body.instant *, body.instant *::before, body.instant *::after { animation: none !important; transition: none !important; }
+body.instant .ch, body.instant .fade { opacity: 1; transform: none; filter: none; }
+body.instant .thread { transform: scaleY(1); }
+body.instant .thread::after { transform: rotate(45deg) scale(1); }
+body.instant .guest-rule { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .ch, .fade, .reveal { opacity: 1; transform: none; filter: none; }
+  .thread { transform: scaleY(1); }
+  .thread::after { transform: rotate(45deg) scale(1); }
+  .guest-rule { transform: scaleX(1); }
+  .scroll-cue { display: none; }
+}
