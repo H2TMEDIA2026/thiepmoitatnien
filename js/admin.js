@@ -343,7 +343,7 @@
     imgField('#img-poster', 'videoPoster', 'Ảnh bìa video', '');
     data.videoPoster = v.poster; // binding for imgField
     
-    var bindEvts = ['url', 'title', 'caption', 'frameStyle', 'aspectRatio', 'position'];
+    var bindEvts = ['url', 'title', 'caption', 'frameStyle', 'aspectRatio', 'position', 'align'];
     bindEvts.forEach(function(k) {
       var el = $('#video-' + k.replace(/[A-Z]/g, m => '-' + m.toLowerCase()));
       if (el) {

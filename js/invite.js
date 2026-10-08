@@ -110,7 +110,8 @@
     var html = '';
     var vSlot = function(id) {
       if (v && v.enabled && v.position === id) {
-        return '<div class="v-slot wrap center" id="' + id + '">' + getVideoHtml(false) + '</div>';
+        var alignCls = v.align && v.align !== 'center' ? ' v-align-' + v.align : '';
+        return '<div class="v-slot wrap center' + alignCls + '" id="' + id + '">' + getVideoHtml(false) + '</div>';
       }
       return '';
     };
